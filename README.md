@@ -54,9 +54,9 @@ positions across your accounts as hedging, which is prohibited. It also warns yo
 than 20 accounts.
 
 Suggested setup:
-- **Leader:** one Apex account (an evaluation or PA account) that **you trade by hand**. Most readings of Apex's
-  rules allow copying from orders you place yourself into your own accounts. Copying from an automated strategy
-  on the leader is the disputed area, so avoid it unless Apex confirms it's allowed.
+- **Leader:** one Apex account (an evaluation or PA account) that **you trade by hand**. Apex allows a trade
+  copier across your own accounts. What it doesn't allow is fully automated trading, so place the leader's
+  trades yourself rather than running an automated strategy on it.
 - **Followers:** only your own Apex accounts. Never copy to or from someone else's account.
 - **Max qty:** set this to each account's contract limit. For PA accounts still under the half-size scaling
   limit, set it to the scaled-down number.
