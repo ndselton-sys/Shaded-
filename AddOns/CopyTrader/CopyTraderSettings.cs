@@ -76,6 +76,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 			LeaderAccount         = string.Empty;
 			Followers             = new ObservableCollection<CopyTraderFollower>();
 			ResyncIntervalSeconds = 5;
+			ApexRules             = true;
 		}
 
 		public string LeaderAccount { get; set; }
@@ -84,6 +85,12 @@ namespace NinjaTrader.NinjaScript.AddOns
 
 		/// <summary>How often every copied instrument is re-checked and corrected. 0 disables it.</summary>
 		public int ResyncIntervalSeconds { get; set; }
+
+		/// <summary>
+		/// Enforce prop-firm (Apex) restrictions: no reversed followers, since opposite
+		/// positions across your accounts count as prohibited hedging.
+		/// </summary>
+		public bool ApexRules { get; set; }
 
 		[XmlIgnore]
 		public static string FilePath
@@ -127,6 +134,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 			{
 				LeaderAccount         = LeaderAccount,
 				ResyncIntervalSeconds = ResyncIntervalSeconds,
+				ApexRules             = ApexRules,
 				Followers             = new ObservableCollection<CopyTraderFollower>(Followers.Select(f => f.Clone()))
 			};
 		}

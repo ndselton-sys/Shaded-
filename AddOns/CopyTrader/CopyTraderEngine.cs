@@ -25,6 +25,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 
 		private const string OrderName           = "CopyTrader";
 		private const int    MaxConsecutiveRejects = 3;
+		private const int    ApexMaxAccounts       = 20;
 		private static readonly TimeSpan FillSettleTimeout = TimeSpan.FromSeconds(3);
 		private static readonly TimeSpan StuckOrderWarning = TimeSpan.FromSeconds(30);
 		private static readonly TimeSpan LogThrottle       = TimeSpan.FromSeconds(30);
@@ -77,6 +78,9 @@ namespace NinjaTrader.NinjaScript.AddOns
 						return "Ratio for '" + f.AccountName + "' must be greater than 0.";
 					if (f.MaxQuantity <= 0)
 						return "Max qty for '" + f.AccountName + "' must be greater than 0.";
+					if (config.ApexRules && f.Reverse)
+						return "Reverse is on for '" + f.AccountName + "'. Apex prohibits hedging (opposite positions across your accounts). "
+							+ "Turn Reverse off, or untick 'Apex rules' if this account is not with a prop firm.";
 
 					Account account = FindAccount(f.AccountName);
 					if (account == null)
@@ -91,6 +95,11 @@ namespace NinjaTrader.NinjaScript.AddOns
 
 				if (newFollowers.Count == 0)
 					return "Add at least one enabled follower.";
+
+				if (config.ApexRules && newFollowers.Count + 1 > ApexMaxAccounts)
+					Write(string.Format(CultureInfo.InvariantCulture,
+						"Warning: copying across {0} accounts. Apex caps you at {1} active accounts in total.",
+						newFollowers.Count + 1, ApexMaxAccounts));
 
 				settings  = config.Clone();
 				leader    = leaderAccount;

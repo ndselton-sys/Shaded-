@@ -47,6 +47,28 @@ Why this design:
 - **No double fires.** Only one copy order per follower and instrument is in flight at a time. The next one waits for the fill and position update to arrive.
 - **Rejects are bounded.** After 3 rejects in a row (for example a daily loss limit), the follower is halted and logged until you press **Sync now**.
 
+## Using it with Apex Trader Funding
+
+Leave **Apex rules** ticked (it's on by default). It blocks **Reverse**, because Apex counts opposite
+positions across your accounts as hedging, which is prohibited. It also warns you if you copy across more
+than 20 accounts.
+
+Suggested setup:
+- **Leader:** one Apex account (an evaluation or PA account) that **you trade by hand**. Most readings of Apex's
+  rules allow copying from orders you place yourself into your own accounts. Copying from an automated strategy
+  on the leader is the disputed area, so avoid it unless Apex confirms it's allowed.
+- **Followers:** only your own Apex accounts. Never copy to or from someone else's account.
+- **Max qty:** set this to each account's contract limit. For PA accounts still under the half-size scaling
+  limit, set it to the scaled-down number.
+- **Ratio:** keep it at 1 when all accounts are the same size. Use the instrument map (e.g. `NQ=MNQ`)
+  for a smaller account rather than a fractional ratio.
+- **Blown accounts:** if Apex liquidates or disables an account, its orders get rejected. After 3 rejects the
+  follower is halted and the others keep copying. Untick it before you start next time.
+- **End of day:** close the leader before Apex's daily cutoff. Followers close with it.
+
+Apex changes its rules often. Check the current rules and Prohibited Activities pages in your Apex dashboard
+before running this on funded accounts.
+
 ## Things to know before you trade it live
 
 - **Test on Sim first.** Use Sim101 as the leader and one or two sim accounts as followers.
@@ -55,7 +77,6 @@ Why this design:
 - **Followers in copied instruments belong to the copier.** If you trade a copied instrument manually on a follower, the copier puts it back in line with the leader. Instruments the leader hasn't traded are left alone.
 - **Starting with an open position.** If the leader already holds a position when you press Start, you'll be asked to confirm. Followers are then brought into line with it immediately.
 - **Closing the window** asks whether to stop copying or keep running in the background. Recompiling NinjaScript stops the copier.
-- **Prop-firm rules.** Most firms (Apex, Topstep and others on Rithmic) allow copying between your *own* accounts, but rules differ. Some forbid copying to or from other people's accounts or hedging across accounts. Check your firm's rules.
 - This is not financial advice. Use at your own risk.
 
 ## Files

@@ -24,6 +24,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 
 		private ComboBox  leaderBox;
 		private TextBox   resyncBox;
+		private CheckBox  apexBox;
 		private DataGrid  grid;
 		private Button    startStopButton;
 		private Button    addButton;
@@ -34,7 +35,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 		public CopyTraderWindow()
 		{
 			Caption = "Copy Trader";
-			Width   = 820;
+			Width   = 900;
 			Height  = 560;
 
 			settings = CopyTraderSettings.Load();
@@ -71,6 +72,15 @@ namespace NinjaTrader.NinjaScript.AddOns
 			top.Children.Add(Label("Resync every (s, 0 = off):"));
 			resyncBox = new TextBox { Width = 50, Text = settings.ResyncIntervalSeconds.ToString(), VerticalContentAlignment = VerticalAlignment.Center };
 			top.Children.Add(resyncBox);
+			apexBox = new CheckBox
+			{
+				Content           = "Apex rules (no reverse / hedging)",
+				IsChecked         = settings.ApexRules,
+				VerticalAlignment = VerticalAlignment.Center,
+				Margin            = new Thickness(20, 0, 0, 0)
+			};
+			apexBox.Click += (s, e) => { settings.ApexRules = apexBox.IsChecked == true; };
+			top.Children.Add(apexBox);
 			Grid.SetRow(top, 0);
 			root.Children.Add(top);
 
@@ -280,6 +290,7 @@ namespace NinjaTrader.NinjaScript.AddOns
 			// Settings are snapshotted at start; lock editing so the screen matches what is live.
 			leaderBox.IsEnabled    = !running;
 			resyncBox.IsEnabled    = !running;
+			apexBox.IsEnabled      = !running;
 			grid.IsReadOnly        = running;
 			addButton.IsEnabled    = !running;
 			removeButton.IsEnabled = !running;
